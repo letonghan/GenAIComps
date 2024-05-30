@@ -8,9 +8,18 @@ from langchain_community.vectorstores import Redis
 from langsmith import traceable
 from redis_config import EMBED_MODEL, INDEX_NAME, INDEX_SCHEMA, REDIS_URL
 
-from comps import EmbedDoc768, SearchedDoc, ServiceType, TextDoc, opea_microservices, register_microservice
+from langchain_core.prompts import ChatPromptTemplate
+from comps import EmbedDoc768, LLMParamsDoc, ServiceType, TextDoc, opea_microservices, register_microservice
 
 tei_embedding_endpoint = os.getenv("TEI_EMBEDDING_ENDPOINT")
+
+
+def ensure_length(s, desired_len=1024, fill_char=' '):
+    if len(s) < desired_len:
+        s += fill_char * (desired_len - len(s))
+    elif len(s) > desired_len:
+        s = s[:desired_len]
+    return s
 
 
 @register_microservice(
@@ -21,7 +30,7 @@ tei_embedding_endpoint = os.getenv("TEI_EMBEDDING_ENDPOINT")
     port=7000,
 )
 @traceable(run_type="retriever")
-def retrieve(input: EmbedDoc768) -> SearchedDoc:
+def retrieve(input: EmbedDoc768) -> LLMParamsDoc:
     # Create vectorstore
     if tei_embedding_endpoint:
         # create embeddings using TEI endpoint service
@@ -40,8 +49,16 @@ def retrieve(input: EmbedDoc768) -> SearchedDoc:
     searched_docs = []
     for r in search_res:
         searched_docs.append(TextDoc(text=r.page_content))
-    result = SearchedDoc(retrieved_docs=searched_docs, initial_query=input.text)
-    return result
+
+    template = """Answer the question based only on the following context:
+    {context}
+    Question: {question}
+    """
+    prompt = ChatPromptTemplate.from_template(template)
+    doc = searched_docs[0]
+    final_prompt = prompt.format(context=doc, question=input.text)
+    final_prompt_1024 = ensure_length(final_prompt)
+    return LLMParamsDoc(query=final_prompt_1024)
 
 
 if __name__ == "__main__":
