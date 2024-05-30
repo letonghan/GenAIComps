@@ -67,7 +67,7 @@ def retrieve(input: EmbedDoc768) -> LLMParamsDoc:
     """
     prompt = ChatPromptTemplate.from_template(template)
     doc = searched_docs[0]
-    final_prompt = prompt.format(context=doc, question=input.text)
+    final_prompt = prompt.format(context=doc.text, question=input.text)
     final_prompt_1024 = ensure_length(final_prompt)
     return LLMParamsDoc(query=final_prompt_1024)
 
