@@ -31,20 +31,6 @@ def ensure_length(s, desired_len=1024, fill_char=' '):
 )
 @traceable(run_type="retriever")
 def retrieve(input: EmbedDoc768) -> LLMParamsDoc:
-    # Create vectorstore
-    if tei_embedding_endpoint:
-        # create embeddings using TEI endpoint service
-        embeddings = HuggingFaceHubEmbeddings(model=tei_embedding_endpoint)
-    else:
-        # create embeddings using local embedding model
-        embeddings = HuggingFaceBgeEmbeddings(model_name=EMBED_MODEL)
-
-    vector_db = Redis.from_existing_index(
-        embedding=embeddings,
-        index_name=INDEX_NAME,
-        redis_url=REDIS_URL,
-        schema=INDEX_SCHEMA,
-    )
     search_res = vector_db.similarity_search_by_vector(embedding=input.embedding)
     searched_docs = []
     for r in search_res:
@@ -62,4 +48,18 @@ def retrieve(input: EmbedDoc768) -> LLMParamsDoc:
 
 
 if __name__ == "__main__":
+    # Create vectorstore
+    if tei_embedding_endpoint:
+        # create embeddings using TEI endpoint service
+        embeddings = HuggingFaceHubEmbeddings(model=tei_embedding_endpoint)
+    else:
+        # create embeddings using local embedding model
+        embeddings = HuggingFaceBgeEmbeddings(model_name=EMBED_MODEL)
+
+    vector_db = Redis.from_existing_index(
+        embedding=embeddings,
+        index_name=INDEX_NAME,
+        redis_url=REDIS_URL,
+        schema=INDEX_SCHEMA,
+    )
     opea_microservices["opea_service@retriever_redis"].start()
