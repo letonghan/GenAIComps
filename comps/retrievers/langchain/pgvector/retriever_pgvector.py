@@ -23,14 +23,6 @@ from comps import (
 tei_embedding_endpoint = os.getenv("TEI_EMBEDDING_ENDPOINT")
 
 
-def ensure_length(s, desired_len=1024, fill_char=' '):
-    if len(s) < desired_len:
-        s += fill_char * (desired_len - len(s))
-    elif len(s) > desired_len:
-        s = s[:desired_len]
-    return s
-
-
 @register_microservice(
     name="opea_service@retriever_pgvector",
     service_type=ServiceType.RETRIEVER,
