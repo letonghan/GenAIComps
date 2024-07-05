@@ -25,6 +25,10 @@ class ServiceType(Enum):
     VECTORSTORE = 8
     DATAPREP = 9
     UNDEFINED = 10
+    RAGAS = 11
+    LVM = 12
+    KNOWLEDGE_GRAPH = 13
+    WEB_RETRIEVER = 14
 
 
 class MegaServiceEndpoint(Enum):
@@ -47,6 +51,9 @@ class MegaServiceEndpoint(Enum):
     RETRIEVAL = "/v1/retrieval"
     RERANKING = "/v1/reranking"
     GUARDRAILS = "/v1/guardrails"
+    RAGAS = "/v1/ragas"
+    GRAPHS = "/v1/graphs"
+
     # COMMON
     LIST_SERVICE = "/v1/list_service"
     LIST_PARAMETERS = "/v1/list_parameters"
@@ -65,6 +72,7 @@ class MicroServiceEndpoint(Enum):
     RETRIEVAL = "/v1/microservice/retrieval"
     RERANKING = "/v1/microservice/reranking"
     GUARDRAILS = "/v1/microservice/guardrails"
+    RAGAS = "/v1/microservice/ragas"
 
     def __str__(self):
         return self.value
