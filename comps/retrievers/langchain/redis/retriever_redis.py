@@ -8,10 +8,10 @@ from langchain_community.embeddings import HuggingFaceBgeEmbeddings, HuggingFace
 from langchain_community.vectorstores import Redis
 from langsmith import traceable
 from redis_config import EMBED_MODEL, INDEX_NAME, REDIS_URL
-
+from langchain_core.prompts import ChatPromptTemplate
 from comps import (
     EmbedDoc768,
-    SearchedDoc,
+    LLMParamsDoc,
     ServiceType,
     TextDoc,
     opea_microservices,
@@ -23,6 +23,14 @@ from comps import (
 tei_embedding_endpoint = os.getenv("TEI_EMBEDDING_ENDPOINT")
 
 
+def ensure_length(s, desired_len=1024, fill_char=' '):
+    if len(s) < desired_len:
+        s += fill_char * (desired_len - len(s))
+    elif len(s) > desired_len:
+        s = s[:desired_len]
+    return s
+
+
 @register_microservice(
     name="opea_service@retriever_redis",
     service_type=ServiceType.RETRIEVER,
@@ -32,11 +40,11 @@ tei_embedding_endpoint = os.getenv("TEI_EMBEDDING_ENDPOINT")
 )
 @traceable(run_type="retriever")
 @register_statistics(names=["opea_service@retriever_redis"])
-def retrieve(input: EmbedDoc768) -> SearchedDoc:
+def retrieve(input: EmbedDoc768) -> LLMParamsDoc:
     start = time.time()
     # check if the Redis index has data
     if vector_db.client.keys() == []:
-        result = SearchedDoc(retrieved_docs=[], initial_query=input.text)
+        result = LLMParamsDoc(query=input.text)
         statistics_dict["opea_service@retriever_redis"].append_latency(time.time() - start, None)
         return result
 
@@ -61,7 +69,15 @@ def retrieve(input: EmbedDoc768) -> SearchedDoc:
     searched_docs = []
     for r in search_res:
         searched_docs.append(TextDoc(text=r.page_content))
-    result = SearchedDoc(retrieved_docs=searched_docs, initial_query=input.text)
+    template = """Answer the question based only on the following context:
+    {context}
+    Question: {question}
+    """
+    prompt = ChatPromptTemplate.from_template(template)
+    doc = searched_docs[0]
+    final_prompt = prompt.format(context=doc.text, question=input.text)
+    final_prompt_1024 = ensure_length(final_prompt)
+    result = LLMParamsDoc(query=final_prompt_1024)
     statistics_dict["opea_service@retriever_redis"].append_latency(time.time() - start, None)
     return result
 
