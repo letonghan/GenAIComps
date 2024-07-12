@@ -30,7 +30,7 @@ from comps import (
     statistics_dict,
 )
 
-index_params = {"index_type": "FLAT", "metric_type": "IP", "params": {}}
+index_params = {"index_type": "IVF_FLAT", "metric_type": "IP", "params": {"nprobe":10}}
 
 class MosecEmbeddings(OpenAIEmbeddings):
     def _get_len_safe_embeddings(
