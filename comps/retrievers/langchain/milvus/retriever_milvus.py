@@ -30,6 +30,7 @@ from comps import (
     statistics_dict,
 )
 
+index_params = {"index_type": "FLAT", "metric_type": "IP", "params": {}}
 
 class MosecEmbeddings(OpenAIEmbeddings):
     def _get_len_safe_embeddings(
@@ -70,6 +71,7 @@ def retrieve(input: EmbedDoc768) -> SearchedDoc:
         embeddings,
         connection_args={"host": MILVUS_HOST, "port": MILVUS_PORT},
         collection_name=COLLECTION_NAME,
+        index_params=index_params
     )
     start = time.time()
     if input.search_type == "similarity":
