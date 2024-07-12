@@ -38,7 +38,7 @@ USER user
 
 WORKDIR /home/user/comps/retrievers/langchain/milvus
 
-# ENTRYPOINT ["python", "retriever_milvus.py"]
+ENTRYPOINT ["python", "retriever_milvus.py"]
 
-ENTRYPOINT ["sleep", "infinity"]
+# ENTRYPOINT ["sleep", "infinity"]
 
