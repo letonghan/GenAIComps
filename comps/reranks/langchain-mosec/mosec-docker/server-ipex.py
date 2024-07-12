@@ -16,7 +16,7 @@ from sentence_transformers import CrossEncoder
 from torch.utils.data import DataLoader
 from tqdm.autonotebook import tqdm, trange
 
-DEFAULT_MODEL = "/root/bge-reranker-base"
+DEFAULT_MODEL = "/root/bce-reranker-base_v1"
 
 
 class MyCrossEncoder(CrossEncoder):
@@ -132,7 +132,7 @@ def float_handler(o):
 
 class MosecReranker(Worker):
     def __init__(self):
-        self.model_name = environ.get("MODEL_NAME", DEFAULT_MODEL)
+        self.model_name = environ.get("EMB_MODEL", DEFAULT_MODEL)
         self.model = MyCrossEncoder(self.model_name)
 
     def serialize(self, data: Response) -> bytes:
