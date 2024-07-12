@@ -40,6 +40,5 @@ RUN /home/user/comps/dataprep/milvus/docker/hard_code.sh
 USER user
 WORKDIR /home/user/comps/dataprep/milvus
 
-# ENTRYPOINT ["python", "prepare_doc_milvus.py"]
-ENTRYPOINT ["sleep", "infinity"]
+ENTRYPOINT ["python", "prepare_doc_milvus.py"]
 
