@@ -32,11 +32,13 @@ class Embedding(Worker):
         batch_size = 16
         seq_length = 512
         d = torch.randint(vocab_size, size=[batch_size, seq_length])
-        t = torch.randint(0, 1, size=[batch_size, seq_length])
+        # t = torch.randint(0, 1, size=[batch_size, seq_length])
         m = torch.randint(1, 2, size=[batch_size, seq_length])
-        self.model = torch.jit.trace(self.model, [d, t, m], check_trace=False, strict=False)
+        # self.model = torch.jit.trace(self.model, [d, t, m], check_trace=False, strict=False)
+        self.model = torch.jit.trace(self.model, [d, m], check_trace=False, strict=False)
         self.model = torch.jit.freeze(self.model)
-        self.model(d, t, m)
+        # self.model(d, t, m)
+        self.model(d, m)
 
     def get_embedding_with_token_count(self, sentences: Union[str, List[Union[str, List[int]]]]):
         # Mean Pooling - Take attention mask into account for correct averaging

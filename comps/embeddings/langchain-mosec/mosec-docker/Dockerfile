@@ -14,7 +14,13 @@ RUN pip3 install intel-extension-for-pytorch==2.2.0
 RUN pip3 install transformers
 RUN pip3 install llmspec mosec
 
-RUN cd /root/ && export HF_ENDPOINT=https://hf-mirror.com && huggingface-cli download --resume-download maidalun1020/bce-embedding-base_v1 --local-dir /root/maidalun1020/bce-embedding-base_v1
+RUN pip install huggingface-hub
+ARG HF_TOKEN
+ENV HF_TOKEN=${HF_TOKEN}
+ENV HF_ENDPOINT=https://hf-mirror.com
+
+RUN cd /root/ && \
+    huggingface-cli download --resume-download maidalun1020/bce-embedding-base_v1 --local-dir /root/maidalun1020/bce-embedding-base_v1
 
 ENV EMB_MODEL="/root/maidalun1020/bce-embedding-base_v1/"
 
