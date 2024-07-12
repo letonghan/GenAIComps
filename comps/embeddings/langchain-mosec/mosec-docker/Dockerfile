@@ -14,9 +14,9 @@ RUN pip3 install intel-extension-for-pytorch==2.2.0
 RUN pip3 install transformers
 RUN pip3 install llmspec mosec
 
-RUN cd /root/ && export HF_ENDPOINT=https://hf-mirror.com && huggingface-cli download --resume-download BAAI/bge-base-zh --local-dir /root/bge-base-zh
+RUN cd /root/ && export HF_ENDPOINT=https://hf-mirror.com && huggingface-cli download --resume-download maidalun1020/bce-embedding-base_v1 --local-dir /root/maidalun1020/bce-embedding-base_v1
 
-ENV EMB_MODEL="/root/bge-base-zh/"
+ENV EMB_MODEL="/root/maidalun1020/bce-embedding-base_v1/"
 
 WORKDIR /root/comps/embeddings/langchain-mosec/mosec-docker
 

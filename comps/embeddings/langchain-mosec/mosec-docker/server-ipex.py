@@ -13,7 +13,7 @@ import transformers  # type: ignore
 from llmspec import EmbeddingData, EmbeddingRequest, EmbeddingResponse, TokenUsage
 from mosec import ClientError, Runtime, Server, Worker
 
-DEFAULT_MODEL = "/root/bge-base-zh/"
+DEFAULT_MODEL = "/root/maidalun1020/bce-embedding-base_v1/"
 
 
 class Embedding(Worker):
