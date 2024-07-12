@@ -196,27 +196,6 @@ async def ingest_documents(
             uploaded_files.append(save_path)
             print(f"Successfully saved file {save_path}")
 
-        def process_files_wrapper(files):
-            if not isinstance(files, list):
-                files = [files]
-            for file in files:
-                ingest_data_to_milvus(DocPath(path=file, chunk_size=chunk_size, chunk_overlap=chunk_overlap))
-
-        try:
-            # Create a SparkContext
-            conf = SparkConf().setAppName("Parallel-dataprep").setMaster("local[*]")
-            sc = SparkContext(conf=conf)
-            # Create an RDD with parallel processing
-            parallel_num = min(len(uploaded_files), os.cpu_count())
-            rdd = sc.parallelize(uploaded_files, parallel_num)
-            # Perform a parallel operation
-            rdd_trans = rdd.map(process_files_wrapper)
-            rdd_trans.collect()
-            # Stop the SparkContext
-            sc.stop()
-        except:
-            # Stop the SparkContext
-            sc.stop()
         return {"status": 200, "message": "Data preparation succeeded"}
 
     if link_list:
