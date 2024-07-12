@@ -1,6 +1,6 @@
 #!/bin/bash
 
-FILE="/home/user/.local/lib/python3.11/site-packages/langchain_milvus/vectorstores/milvus.py"
+FILE="/home/user/local/lib/python3.11/site-packages/langchain_milvus/vectorstores/milvus.py"
 
 MARKER='if index is not None:'
 

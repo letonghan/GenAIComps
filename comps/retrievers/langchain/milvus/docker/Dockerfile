@@ -18,13 +18,13 @@ RUN useradd -m -s /bin/bash user && \
     mkdir -p /home/user && \
     chown -R user /home/user/
 
+COPY comps /home/user/comps
+
 # Hard Code Langchain Milvus
 RUN chmod +x /home/user/comps/retrievers/langchain/milvus/docker/hard_code.sh
 RUN /home/user/comps/retrievers/langchain/milvus/docker/hard_code.sh
 
 USER user
-
-COPY comps /home/user/comps
 
 RUN pip install --no-cache-dir --upgrade pip && \
     if [ ${ARCH} = "cpu" ]; then pip install torch --index-url https://download.pytorch.org/whl/cpu; fi && \
@@ -34,5 +34,7 @@ ENV PYTHONPATH=$PYTHONPATH:/home/user
 
 WORKDIR /home/user/comps/retrievers/langchain/milvus
 
-ENTRYPOINT ["python", "retriever_milvus.py"]
+# ENTRYPOINT ["python", "retriever_milvus.py"]
+
+ENTRYPOINT ["sleep", "infinity"]
 
