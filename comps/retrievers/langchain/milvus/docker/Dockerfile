@@ -18,6 +18,10 @@ RUN useradd -m -s /bin/bash user && \
     mkdir -p /home/user && \
     chown -R user /home/user/
 
+# Hard Code Langchain Milvus
+RUN chmod +x /home/user/comps/retrievers/langchain/milvus/docker/hard_code.sh
+RUN /home/user/comps/retrievers/langchain/milvus/docker/hard_code.sh
+
 USER user
 
 COPY comps /home/user/comps
