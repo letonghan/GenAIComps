@@ -33,8 +33,13 @@ USER root
 
 RUN mkdir -p /home/user/comps/dataprep/milvus/uploaded_files && chown -R user /home/user/comps/dataprep/milvus/uploaded_files
 
+# Hard Code Langchain Milvus
+RUN chmod +x /home/user/comps/dataprep/milvus/docker/hard_code.sh
+RUN /home/user/comps/dataprep/milvus/docker/hard_code.sh
+
 USER user
 WORKDIR /home/user/comps/dataprep/milvus
 
-ENTRYPOINT ["python", "prepare_doc_milvus.py"]
+# ENTRYPOINT ["python", "prepare_doc_milvus.py"]
+ENTRYPOINT ["sleep", "infinity"]
 
