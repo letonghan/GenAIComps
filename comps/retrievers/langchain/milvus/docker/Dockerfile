@@ -20,17 +20,19 @@ RUN useradd -m -s /bin/bash user && \
 
 COPY comps /home/user/comps
 
+USER root 
+
 # Hard Code Langchain Milvus
 RUN chmod +x /home/user/comps/retrievers/langchain/milvus/docker/hard_code.sh
 RUN /home/user/comps/retrievers/langchain/milvus/docker/hard_code.sh
-
-USER user
 
 RUN pip install --no-cache-dir --upgrade pip && \
     if [ ${ARCH} = "cpu" ]; then pip install torch --index-url https://download.pytorch.org/whl/cpu; fi && \
     pip install --no-cache-dir -r /home/user/comps/retrievers/langchain/milvus/requirements.txt
 
 ENV PYTHONPATH=$PYTHONPATH:/home/user
+
+USER user
 
 WORKDIR /home/user/comps/retrievers/langchain/milvus
 
