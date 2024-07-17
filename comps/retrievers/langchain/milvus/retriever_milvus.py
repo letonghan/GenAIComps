@@ -15,13 +15,14 @@ from config import (
     MODEL_ID,
     MOSEC_EMBEDDING_ENDPOINT,
 )
+from langchain_core.prompts import ChatPromptTemplate
 from langchain_community.embeddings import HuggingFaceBgeEmbeddings, HuggingFaceHubEmbeddings, OpenAIEmbeddings
 from langchain_milvus.vectorstores import Milvus
 from langsmith import traceable
 
 from comps import (
     EmbedDoc768,
-    SearchedDoc,
+    LLMParamsDoc,
     ServiceType,
     TextDoc,
     opea_microservices,
@@ -65,7 +66,7 @@ class MosecEmbeddings(OpenAIEmbeddings):
 )
 @traceable(run_type="retriever")
 @register_statistics(names=["opea_service@retriever_milvus"])
-def retrieve(input: EmbedDoc768) -> SearchedDoc:
+def retrieve(input: EmbedDoc768) -> LLMParamsDoc:
     vector_db = Milvus(
         embeddings,
         connection_args={"host": MILVUS_HOST, "port": MILVUS_PORT},
@@ -92,7 +93,14 @@ def retrieve(input: EmbedDoc768) -> SearchedDoc:
     searched_docs = []
     for r in search_res:
         searched_docs.append(TextDoc(text=r.page_content))
-    result = SearchedDoc(retrieved_docs=searched_docs, initial_query=input.text)
+    template = """Answer the question based only on the following context:
+    {context}
+    Question: {question}
+    """
+    prompt = ChatPromptTemplate.from_template(template)
+    doc = searched_docs[0]
+    final_prompt = prompt.format(context=doc.text, question=input.text)
+    result = LLMParamsDoc(query=final_prompt)
     statistics_dict["opea_service@retriever_milvus"].append_latency(time.time() - start, None)
     return result
 
