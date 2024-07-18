@@ -69,13 +69,33 @@ def retrieve(input: EmbedDoc768) -> LLMParamsDoc:
     searched_docs = []
     for r in search_res:
         searched_docs.append(TextDoc(text=r.page_content))
-    template = """Answer the question based only on the following context:
-    {context}
-    Question: {question}
-    """
-    prompt = ChatPromptTemplate.from_template(template)
+    # template = """Answer the question based only on the following context:
+    # {context}
+    # Question: {question}
+    # """
+    # prompt = ChatPromptTemplate.from_template(template)
     doc = searched_docs[0]
-    final_prompt = prompt.format(context=doc.text, question=input.text)
+
+    import re
+    if re.findall("[\u4E00-\u9FFF]", doc.text) or re.findall("[\u4E00-\u9FFF]", input.text):
+        # chinese context
+        template = """
+### 你将扮演一个乐于助人、尊重他人并诚实的助手，你的目标是帮助用户解答问题。有效地利用来自本地知识库的搜索结果。确保你的回答中只包含相关信息。如果你不确定问题的答案，请避免分享不准确的信息。
+### 搜索结果：{context}
+### 问题：{question}
+### 回答：
+"""
+    else:
+        template = """
+### You are a helpful, respectful and honest assistant to help the user with questions. \
+Please refer to the search results obtained from the local knowledge base. \
+But be careful to not incorporate the information that you think is not relevant to the question. \
+If you don't know the answer to a question, please don't share false information. \
+### Search results: {context} \n
+### Question: {question} \n
+### Answer:
+"""
+    final_prompt = template.format(context=doc.text, question=input.text)
     final_prompt_1024 = ensure_length(final_prompt)
     result = LLMParamsDoc(query=final_prompt_1024)
     statistics_dict["opea_service@retriever_redis"].append_latency(time.time() - start, None)
